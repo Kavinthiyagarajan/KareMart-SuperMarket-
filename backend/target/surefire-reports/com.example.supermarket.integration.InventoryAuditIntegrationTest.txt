@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.example.supermarket.integration.InventoryAuditIntegrationTest
+-------------------------------------------------------------------------------
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.166 s -- in com.example.supermarket.integration.InventoryAuditIntegrationTest
