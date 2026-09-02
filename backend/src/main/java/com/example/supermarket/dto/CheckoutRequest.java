@@ -7,7 +7,6 @@ import java.util.List;
 public record CheckoutRequest(
     @NotEmpty(message = "Items cannot be empty")
     List<CartItemDto> items,
-    @NotNull(message = "Address ID is required")
     Long addressId,
     String couponCode
 ) {}

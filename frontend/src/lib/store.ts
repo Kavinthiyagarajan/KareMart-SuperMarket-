@@ -14,6 +14,7 @@ interface CartState {
   removeItem: (productId: number) => void;
   updateQuantity: (productId: number, quantity: number) => void;
   clearCart: () => void;
+  resetLocalCart: () => void;
   syncWithBackend: () => Promise<void>;
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
@@ -27,6 +28,7 @@ export const useCartStore = create<CartState>()(
       isOpen: false,
       setIsOpen: (isOpen) => set({ isOpen }),
       toggleCart: () => set((state) => ({ isOpen: !state.isOpen })),
+      resetLocalCart: () => set({ items: [] }),
       syncWithBackend: async () => {
         const token = useAuthStore.getState().token;
         if (token) {

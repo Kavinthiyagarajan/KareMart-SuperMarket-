@@ -27,7 +27,7 @@ public class AddressService {
 
     private User getUserByUsername(String username) {
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
 
     public List<AddressDto> getMyAddresses(String username) {
@@ -39,7 +39,7 @@ public class AddressService {
     public AddressDto getAddress(Long id, String username) {
         User user = getUserByUsername(username);
         Address address = addressRepository.findByIdAndUser(id, user)
-                .orElseThrow(() -> new RuntimeException("Address not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Address not found"));
         return toDto(address);
     }
 
@@ -68,7 +68,7 @@ public class AddressService {
     public AddressDto updateAddress(Long id, AddressRequest request, String username) {
         User user = getUserByUsername(username);
         Address address = addressRepository.findByIdAndUser(id, user)
-                .orElseThrow(() -> new RuntimeException("Address not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Address not found"));
 
         updateAddressFromRequest(address, request);
 
@@ -85,7 +85,7 @@ public class AddressService {
     public void deleteAddress(Long id, String username) {
         User user = getUserByUsername(username);
         Address address = addressRepository.findByIdAndUser(id, user)
-                .orElseThrow(() -> new RuntimeException("Address not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Address not found"));
         
         boolean wasDefault = address.getIsDefault();
         addressRepository.delete(address);
@@ -105,7 +105,7 @@ public class AddressService {
     public AddressDto setDefaultAddress(Long id, String username) {
         User user = getUserByUsername(username);
         Address address = addressRepository.findByIdAndUser(id, user)
-                .orElseThrow(() -> new RuntimeException("Address not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Address not found"));
 
         clearOtherDefaults(user);
         address.setIsDefault(true);

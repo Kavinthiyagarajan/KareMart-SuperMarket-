@@ -124,23 +124,45 @@ export default function ProductDetailsPage(props: { params: Promise<{ slug: stri
             </p>
           </div>
 
-          <div className="mt-auto">
+          <div className="mt-auto space-y-3">
             {isOutOfStock ? (
-              <div className="w-full bg-slate-100 text-slate-500 text-center font-bold py-4 rounded-full border border-border">
-                Currently Out of Stock
+              <div className="space-y-3">
+                <div className="w-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-center font-bold py-3.5 rounded-2xl border border-border">
+                  Currently Out of Stock
+                </div>
+                <Link
+                  href={`/support?productId=${product.id}&productName=${encodeURIComponent(product.name)}&type=PRODUCT_AVAILABILITY`}
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-4 rounded-2xl transition-all shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2 text-center text-sm"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                  Ask When Available / Request Restock
+                </Link>
               </div>
             ) : (
-              <button 
-                onClick={() => {
-                  addItem(product);
-                  addToast(`Added ${product.name} to cart`, 'success');
-                }}
-                className="w-full bg-primary text-primary-foreground font-bold text-lg py-4 rounded-full hover:bg-primary-hover active:scale-[0.98] transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-                Add to Cart
-              </button>
+              <>
+                <button 
+                  onClick={() => {
+                    addItem(product);
+                    addToast(`Added ${product.name} to cart`, 'success');
+                  }}
+                  className="w-full bg-primary text-primary-foreground font-bold text-lg py-4 rounded-full hover:bg-primary-hover active:scale-[0.98] transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                  Add to Cart
+                </button>
+                <div className="pt-2 text-center">
+                  <Link
+                    href={`/support?productId=${product.id}&productName=${encodeURIComponent(product.name)}&type=BULK_ORDER`}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-emerald-600 transition-colors"
+                  >
+                    <span>Need bulk quantities or custom inquiry?</span>
+                    <span className="underline font-bold">Ask KareMart Support</span>
+                  </Link>
+                </div>
+              </>
             )}
           </div>
         </div>

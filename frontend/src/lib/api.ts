@@ -938,5 +938,383 @@ export const api = {
       headers: api.getHeaders()
     });
     if (!response.ok) throw new Error("Failed to mark all notifications as read");
+  },
+
+  // Support Chat
+  getSupportConversations: async (page: number = 0, size: number = 20): Promise<PagedResponse<SupportConversationDto>> => {
+    const response = await fetch(`${API_BASE_URL}/v1/support/conversations?page=${page}&size=${size}`, {
+      headers: api.getHeaders()
+    });
+    if (!response.ok) throw new Error("Failed to get support conversations");
+    return response.json();
+  },
+
+  getSupportConversation: async (id: number): Promise<SupportConversationDetailDto> => {
+    const response = await fetch(`${API_BASE_URL}/v1/support/conversations/${id}`, {
+      headers: api.getHeaders()
+    });
+    if (!response.ok) throw new Error("Failed to get conversation details");
+    return response.json();
+  },
+
+  createSupportConversation: async (data: CreateConversationRequest): Promise<SupportConversationDetailDto> => {
+    const response = await fetch(`${API_BASE_URL}/v1/support/conversations`, {
+      method: 'POST',
+      headers: api.getHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.message || "Failed to create support request");
+    }
+    return response.json();
+  },
+
+  sendSupportMessage: async (conversationId: number, message: string): Promise<SupportMessageDto> => {
+    const response = await fetch(`${API_BASE_URL}/v1/support/conversations/${conversationId}/messages`, {
+      method: 'POST',
+      headers: api.getHeaders(),
+      body: JSON.stringify({ message })
+    });
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.message || "Failed to send message");
+    }
+    return response.json();
+  },
+
+  markSupportConversationRead: async (conversationId: number): Promise<void> => {
+    const response = await fetch(`${API_BASE_URL}/v1/support/conversations/${conversationId}/read`, {
+      method: 'PATCH',
+      headers: api.getHeaders()
+    });
+    if (!response.ok) throw new Error("Failed to mark conversation as read");
+  },
+
+  // Admin Support
+  getAdminSupportConversations: async (
+    filters?: { status?: string; requestType?: string; search?: string },
+    page: number = 0,
+    size: number = 20
+  ): Promise<PagedResponse<SupportConversationDto>> => {
+    const params = new URLSearchParams({ page: page.toString(), size: size.toString() });
+    if (filters?.status) params.set('status', filters.status);
+    if (filters?.requestType) params.set('requestType', filters.requestType);
+    if (filters?.search) params.set('search', filters.search);
+
+    const response = await fetch(`${API_BASE_URL}/v1/admin/support/conversations?${params.toString()}`, {
+      headers: api.getHeaders()
+    });
+    if (!response.ok) throw new Error("Failed to get admin support conversations");
+    return response.json();
+  },
+
+  getAdminSupportConversation: async (id: number): Promise<SupportConversationDetailDto> => {
+    const response = await fetch(`${API_BASE_URL}/v1/admin/support/conversations/${id}`, {
+      headers: api.getHeaders()
+    });
+    if (!response.ok) throw new Error("Failed to get admin conversation details");
+    return response.json();
+  },
+
+  sendAdminSupportReply: async (conversationId: number, data: AdminReplyRequest): Promise<SupportMessageDto> => {
+    const response = await fetch(`${API_BASE_URL}/v1/admin/support/conversations/${conversationId}/messages`, {
+      method: 'POST',
+      headers: api.getHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.message || "Failed to send admin reply");
+    }
+    return response.json();
+  },
+
+  updateAdminSupportStatus: async (conversationId: number, status: ConversationStatus): Promise<SupportConversationDetailDto> => {
+    const response = await fetch(`${API_BASE_URL}/v1/admin/support/conversations/${conversationId}/status`, {
+      method: 'PATCH',
+      headers: api.getHeaders(),
+      body: JSON.stringify({ status })
+    });
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.message || "Failed to update conversation status");
+    }
+    return response.json();
+  },
+
+  // Customer Cancellation & Returns
+  cancelOrder: async (orderNumber: string, data: CancelOrderRequest): Promise<CancellationRequestDto> => {
+    const response = await fetch(`${API_BASE_URL}/v1/profile/orders/${orderNumber}/cancel`, {
+      method: 'POST',
+      headers: api.getHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.message || "Failed to cancel order");
+    }
+    return response.json();
+  },
+
+  requestReturn: async (orderNumber: string, data: ReturnOrderRequest): Promise<ReturnRequestDto> => {
+    const response = await fetch(`${API_BASE_URL}/v1/profile/orders/${orderNumber}/return`, {
+      method: 'POST',
+      headers: api.getHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.message || "Failed to submit return request");
+    }
+    return response.json();
+  },
+
+  getOrderActionEligibility: async (orderNumber: string): Promise<OrderActionEligibilityDto> => {
+    const response = await fetch(`${API_BASE_URL}/v1/profile/orders/${orderNumber}/actions`, {
+      headers: api.getHeaders()
+    });
+    if (!response.ok) throw new Error("Failed to load order action eligibility");
+    return response.json();
+  },
+
+  getMyReturns: async (page: number = 0, size: number = 20): Promise<PagedResponse<ReturnRequestDto>> => {
+    const response = await fetch(`${API_BASE_URL}/v1/profile/returns?page=${page}&size=${size}`, {
+      headers: api.getHeaders()
+    });
+    if (!response.ok) throw new Error("Failed to load return requests");
+    return response.json();
+  },
+
+  getReturnDetails: async (id: number): Promise<ReturnRequestDto> => {
+    const response = await fetch(`${API_BASE_URL}/v1/profile/returns/${id}`, {
+      headers: api.getHeaders()
+    });
+    if (!response.ok) throw new Error("Failed to load return request details");
+    return response.json();
+  },
+
+  getMyCancellations: async (page: number = 0, size: number = 20): Promise<PagedResponse<CancellationRequestDto>> => {
+    const response = await fetch(`${API_BASE_URL}/v1/profile/cancellations?page=${page}&size=${size}`, {
+      headers: api.getHeaders()
+    });
+    if (!response.ok) throw new Error("Failed to load cancellation requests");
+    return response.json();
+  },
+
+  getMyRefunds: async (): Promise<CustomerRefundDto[]> => {
+    const response = await fetch(`${API_BASE_URL}/v1/profile/refunds`, {
+      headers: api.getHeaders()
+    });
+    if (!response.ok) throw new Error("Failed to load refund history");
+    return response.json();
+  },
+
+  // Admin Returns & Cancellations
+  getAdminReturns: async (status?: string, search?: string, page: number = 0, size: number = 20): Promise<PagedResponse<ReturnRequestDto>> => {
+    const params = new URLSearchParams({ page: page.toString(), size: size.toString() });
+    if (status && status !== 'ALL') params.set('status', status);
+    if (search) params.set('search', search);
+
+    const response = await fetch(`${API_BASE_URL}/v1/admin/returns?${params.toString()}`, {
+      headers: api.getHeaders()
+    });
+    if (!response.ok) throw new Error("Failed to load admin returns");
+    return response.json();
+  },
+
+  getAdminCancellations: async (status?: string, search?: string, page: number = 0, size: number = 20): Promise<PagedResponse<CancellationRequestDto>> => {
+    const params = new URLSearchParams({ page: page.toString(), size: size.toString() });
+    if (status && status !== 'ALL') params.set('status', status);
+    if (search) params.set('search', search);
+
+    const response = await fetch(`${API_BASE_URL}/v1/admin/cancellations?${params.toString()}`, {
+      headers: api.getHeaders()
+    });
+    if (!response.ok) throw new Error("Failed to load admin cancellations");
+    return response.json();
+  },
+
+  reviewAdminCancellation: async (id: number, data: AdminReviewRequest): Promise<CancellationRequestDto> => {
+    const response = await fetch(`${API_BASE_URL}/v1/admin/cancellations/${id}/review`, {
+      method: 'POST',
+      headers: api.getHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.message || "Failed to review cancellation request");
+    }
+    return response.json();
+  },
+
+  reviewAdminReturn: async (id: number, data: AdminReviewRequest): Promise<ReturnRequestDto> => {
+    const response = await fetch(`${API_BASE_URL}/v1/admin/returns/${id}/review`, {
+      method: 'POST',
+      headers: api.getHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.message || "Failed to review return request");
+    }
+    return response.json();
+  },
+
+  completeAdminReturn: async (id: number, data: AdminCompleteReturnRequest): Promise<ReturnRequestDto> => {
+    const response = await fetch(`${API_BASE_URL}/v1/admin/returns/${id}/complete`, {
+      method: 'POST',
+      headers: api.getHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.message || "Failed to complete return");
+    }
+    return response.json();
   }
 };
+
+export type ConversationStatus = 'OPEN' | 'IN_PROGRESS' | 'WAITING_FOR_CUSTOMER' | 'RESOLVED' | 'CLOSED';
+export type RequestType = 'PRODUCT_AVAILABILITY' | 'BULK_ORDER' | 'DELIVERY_QUESTION' | 'PRODUCT_REQUEST' | 'ORDER_ISSUE' | 'OTHER';
+export type AvailabilityStatus = 'AVAILABLE' | 'NOT_AVAILABLE' | 'AVAILABLE_LATER' | 'NOT_APPLICABLE';
+export type SenderType = 'CUSTOMER' | 'ADMIN';
+
+export interface SupportMessageDto {
+  id: number;
+  conversationId: number;
+  senderType: SenderType;
+  senderUsername: string;
+  message: string;
+  availabilityStatus?: AvailabilityStatus;
+  availableAt?: string;
+  createdAt: string;
+}
+
+export interface SupportConversationDto {
+  id: number;
+  userId: number;
+  username: string;
+  subject: string;
+  requestType: RequestType;
+  productId?: number;
+  productName?: string;
+  productImageUrl?: string;
+  status: ConversationStatus;
+  createdAt: string;
+  updatedAt: string;
+  messageCount: number;
+  lastMessage?: SupportMessageDto;
+}
+
+export interface SupportConversationDetailDto {
+  id: number;
+  userId: number;
+  username: string;
+  subject: string;
+  requestType: RequestType;
+  productId?: number;
+  productName?: string;
+  productImageUrl?: string;
+  status: ConversationStatus;
+  createdAt: string;
+  updatedAt: string;
+  messages: SupportMessageDto[];
+}
+
+export interface CreateConversationRequest {
+  subject: string;
+  requestType: RequestType;
+  productId?: number;
+  message: string;
+}
+
+export interface AdminReplyRequest {
+  message: string;
+  availabilityStatus?: AvailabilityStatus;
+  availableAt?: string;
+  newStatus?: ConversationStatus;
+}
+
+export type CancellationReason = 'CHANGED_MIND' | 'ORDERED_BY_MISTAKE' | 'DELIVERY_DELAY' | 'OTHER';
+export type ReturnReason = 'DAMAGED_INCORRECT_ITEM' | 'PRODUCT_ISSUE' | 'ORDERED_BY_MISTAKE' | 'OTHER';
+export type RequestStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'COMPLETED';
+export type RefundStatus = 'NOT_REQUESTED' | 'REQUESTED' | 'APPROVED' | 'REJECTED' | 'PROCESSING' | 'COMPLETED';
+
+export interface CancelOrderRequest {
+  reason: CancellationReason;
+  notes?: string;
+}
+
+export interface ReturnOrderRequest {
+  reason: ReturnReason;
+  notes?: string;
+}
+
+export interface AdminReviewRequest {
+  approve: boolean;
+  adminNotes?: string;
+}
+
+export interface AdminCompleteReturnRequest {
+  restockItems: boolean;
+  adminNotes?: string;
+}
+
+export interface CancellationRequestDto {
+  id: number;
+  orderNumber: string;
+  userId: string;
+  reason: CancellationReason;
+  notes?: string;
+  status: RequestStatus;
+  refundStatus: RefundStatus;
+  refundAmount?: number;
+  createdAt: string;
+  updatedAt: string;
+  reviewedBy?: string;
+  reviewedAt?: string;
+  adminNotes?: string;
+}
+
+export interface ReturnRequestDto {
+  id: number;
+  orderNumber: string;
+  userId: string;
+  reason: ReturnReason;
+  notes?: string;
+  status: RequestStatus;
+  refundStatus: RefundStatus;
+  refundAmount: number;
+  createdAt: string;
+  updatedAt: string;
+  reviewedBy?: string;
+  reviewedAt?: string;
+  adminNotes?: string;
+}
+
+export interface OrderActionEligibilityDto {
+  canCancel: boolean;
+  canRequestReturn: boolean;
+  hasActiveCancellation: boolean;
+  hasActiveReturn: boolean;
+  cancelIneligibleReason?: string;
+  returnIneligibleReason?: string;
+  cancellation?: CancellationRequestDto;
+  returnRequest?: ReturnRequestDto;
+}
+
+export interface CustomerRefundDto {
+  requestType: 'CANCELLATION' | 'RETURN';
+  requestId: number;
+  orderNumber: string;
+  amount: number;
+  refundStatus: RefundStatus;
+  reason: string;
+  notes?: string;
+  requestedAt: string;
+  updatedAt: string;
+  adminNotes?: string;
+}
+
+

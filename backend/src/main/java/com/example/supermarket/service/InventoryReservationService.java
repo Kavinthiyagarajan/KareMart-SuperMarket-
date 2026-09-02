@@ -55,12 +55,13 @@ public class InventoryReservationService {
 
     @Transactional
     public void releaseReservations(String orderNumber, ReservationStatus targetStatus) {
-        List<InventoryReservation> activeReservations = reservationRepository.findByOrderNumberAndStatus(orderNumber, ReservationStatus.ACTIVE);
+        List<InventoryReservation> reservationsToRelease = reservationRepository.findByOrderNumberAndStatusIn(
+                orderNumber, List.of(ReservationStatus.ACTIVE, ReservationStatus.COMMITTED));
         
         // Sort by productId to prevent deadlocks when locking multiple products
-        activeReservations.sort(java.util.Comparator.comparing(InventoryReservation::getProductId));
+        reservationsToRelease.sort(java.util.Comparator.comparing(InventoryReservation::getProductId));
         
-        for (InventoryReservation res : activeReservations) {
+        for (InventoryReservation res : reservationsToRelease) {
             // Restore stock atomically and safely via pessimistic locking
             com.example.supermarket.model.Product product = productRepository.findByIdForUpdate(res.getProductId()).orElse(null);
             if (product != null) {
@@ -74,6 +75,6 @@ public class InventoryReservationService {
             }
             res.setStatus(targetStatus);
         }
-        reservationRepository.saveAll(activeReservations);
+        reservationRepository.saveAll(reservationsToRelease);
     }
 }

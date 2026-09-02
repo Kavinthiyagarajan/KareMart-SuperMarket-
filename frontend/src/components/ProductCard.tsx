@@ -134,18 +134,23 @@ export default function ProductCard({ product }: { product: Product }) {
             )}
           </div>
           
-          <button 
-            disabled={isOutOfStock}
-            onClick={handleAddToCart}
-            className={`flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-              isOutOfStock 
-                ? 'bg-slate-100 text-slate-400 cursor-not-allowed' 
-                : 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-md active:scale-95'
-            }`}
-            aria-label="Add to cart"
-          >
-            Add
-          </button>
+          {isOutOfStock ? (
+            <Link
+              href={`/support?productId=${product.id}&productName=${encodeURIComponent(product.name)}&type=PRODUCT_AVAILABILITY`}
+              className="flex items-center justify-center px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 transition-colors border border-emerald-200 shadow-sm"
+              title="Ask about availability"
+            >
+              Inquire
+            </Link>
+          ) : (
+            <button 
+              onClick={handleAddToCart}
+              className="flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-md active:scale-95"
+              aria-label="Add to cart"
+            >
+              Add
+            </button>
+          )}
         </div>
       </div>
       

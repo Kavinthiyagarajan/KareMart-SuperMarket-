@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuthStore } from '@/lib/authStore';
+import { useCartStore } from '@/lib/store';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -26,6 +27,7 @@ export default function LoginPage() {
       
       const data = await response.json();
       setAuth(data.token, data.username, data.role);
+      await useCartStore.getState().syncWithBackend();
       
       if (data.role === 'ADMIN') {
         router.push('/admin');

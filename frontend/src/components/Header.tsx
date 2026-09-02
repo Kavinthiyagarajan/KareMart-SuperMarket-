@@ -6,7 +6,7 @@ import { useAuthStore } from "@/lib/authStore";
 import { useEffect, useState } from "react";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import SmartSearch from "@/components/SmartSearch";
+import SmartCommandBar from "@/components/SmartCommandBar";
 import { api } from "@/lib/api";
 
 function NotificationBadge() {
@@ -47,7 +47,7 @@ export default function Header() {
 
   const logout = () => {
     originalLogout();
-    useCartStore.getState().clearCart();
+    useCartStore.getState().resetLocalCart();
   };
 
   return (
@@ -60,18 +60,22 @@ export default function Header() {
           <span><span className="text-emerald-600 font-extrabold">K</span>are<span className="text-emerald-600 font-extrabold">M</span>art</span>
         </Link>
         <div className="flex-1 max-w-lg mx-8 hidden md:block">
-          <SmartSearch />
+          <SmartCommandBar />
         </div>
         <div className="flex items-center gap-4">
           <Link href="/deals" className="hidden md:flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-red-600 bg-red-50 rounded-full hover:bg-red-100 transition-colors">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
             Deals
           </Link>
+          <Link href="/help" className="hidden lg:flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium text-slate-600 hover:text-emerald-700 hover:bg-emerald-50/60 rounded-full transition-colors">
+            <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            Help
+          </Link>
           {isMounted && (
             username ? (
               <div className="flex items-center gap-3 text-sm font-medium">
                 {role === 'ADMIN' && (
-                  <Link href="/admin/products" className="text-xs font-bold text-white bg-slate-900 px-3 py-1.5 rounded-full shadow-sm hover:bg-slate-800 transition-colors">
+                  <Link href="/admin" className="text-xs font-bold text-white bg-slate-900 px-3 py-1.5 rounded-full shadow-sm hover:bg-slate-800 transition-colors">
                     ADMIN
                   </Link>
                 )}

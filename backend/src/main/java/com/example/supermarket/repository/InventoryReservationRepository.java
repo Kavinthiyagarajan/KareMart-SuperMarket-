@@ -12,4 +12,5 @@ import java.util.List;
 public interface InventoryReservationRepository extends JpaRepository<InventoryReservation, Long> {
     List<InventoryReservation> findByOrderNumber(String orderNumber);
     List<InventoryReservation> findByOrderNumberAndStatus(String orderNumber, ReservationStatus status);
+    List<InventoryReservation> findByOrderNumberAndStatusIn(String orderNumber, List<ReservationStatus> statuses);
 }
